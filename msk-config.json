@@ -1,0 +1,5 @@
+{
+  "Name": "spring-kafka-msk-config",
+  "KafkaVersions": ["3.6.0"],
+  "ServerProperties": "auto.create.topics.enable=true\ndelete.topic.enable=true"
+}

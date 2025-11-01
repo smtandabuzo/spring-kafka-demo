@@ -1,0 +1,7 @@
+/home/sazi/IdeaProjects/spring-kafka-demo/src/main/java/com/example/kafkademo/consumer/UserEventConsumer.java
+/home/sazi/IdeaProjects/spring-kafka-demo/src/main/java/com/example/kafkademo/util/MskClusterUtils.java
+/home/sazi/IdeaProjects/spring-kafka-demo/src/main/java/com/example/kafkademo/config/KafkaConfig.java
+/home/sazi/IdeaProjects/spring-kafka-demo/src/main/java/com/example/kafkademo/controller/UserEventController.java
+/home/sazi/IdeaProjects/spring-kafka-demo/src/main/java/com/example/kafkademo/KafkaDemoApplication.java
+/home/sazi/IdeaProjects/spring-kafka-demo/src/main/java/com/example/kafkademo/producer/UserEventProducer.java
+/home/sazi/IdeaProjects/spring-kafka-demo/src/main/java/com/example/kafkademo/avro/UserEvent.java

@@ -1,0 +1,5 @@
+{
+  "BrokerAZDistribution": "DEFAULT",
+  "InstanceType": "kafka.t3.small",
+  "ClientSubnets": ["subnet-02cfedba848cefd22", "subnet-0a643ea844be0ba99"]
+}

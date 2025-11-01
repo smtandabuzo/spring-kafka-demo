@@ -1,0 +1,97 @@
+[
+  {
+    "Namespace": "aws:ec2:vpc",
+    "OptionName": "VPCId",
+    "Value": "vpc-0365aa4adc4bbd4bc"
+  },
+  {
+    "Namespace": "aws:ec2:vpc",
+    "OptionName": "Subnets",
+    "Value": "subnet-01d9503818d8ec0fd,subnet-0d171bb7b3ca16d14,subnet-07cb3e9fad9b89eec"
+  },
+  {
+    "Namespace": "aws:ec2:vpc",
+    "OptionName": "ELBSubnets",
+    "Value": "subnet-01d9503818d8ec0fd,subnet-0d171bb7b3ca16d14,subnet-07cb3e9fad9b89eec"
+  },
+  {
+    "Namespace": "aws:autoscaling:launchconfiguration",
+    "OptionName": "SecurityGroups",
+    "Value": "sg-04d092612ffcecab4"
+  },
+  {
+    "Namespace": "aws:ec2:vpc",
+    "OptionName": "AssociatePublicIpAddress",
+    "Value": "true"
+  },
+  {
+    "Namespace": "aws:elasticbeanstalk:application:environment",
+    "OptionName": "SPRING_PROFILES_ACTIVE",
+    "Value": "production"
+  },
+  {
+    "Namespace": "aws:elasticbeanstalk:application:environment",
+    "OptionName": "SERVER_PORT",
+    "Value": "5000"
+  },
+  {
+    "Namespace": "aws:elasticbeanstalk:application:environment",
+    "OptionName": "SPRING_KAFKA_BOOTSTRAP_SERVERS",
+    "Value": "b-1.springkafkamsk.03gt5v.c21.kafka.us-east-1.amazonaws.com:9092,b-2.springkafkamsk.03gt5v.c21.kafka.us-east-1.amazonaws.com:9092"
+  },
+  {
+    "Namespace": "aws:elasticbeanstalk:application:environment",
+    "OptionName": "AWS_REGION",
+    "Value": "us-east-1"
+  },
+  {
+    "Namespace": "aws:elasticbeanstalk:application:environment",
+    "OptionName": "JAVA_TOOL_OPTIONS",
+    "Value": "-Xms512m -Xmx1024m"
+  },
+  {
+    "Namespace": "aws:autoscaling:launchconfiguration",
+    "OptionName": "IamInstanceProfile",
+    "Value": "aws-elasticbeanstalk-ec2-role"
+  },
+  {
+    "Namespace": "aws:autoscaling:launchconfiguration",
+    "OptionName": "InstanceType",
+    "Value": "t3.micro"
+  },
+  {
+    "Namespace": "aws:autoscaling:asg",
+    "OptionName": "MinSize",
+    "Value": "1"
+  },
+  {
+    "Namespace": "aws:autoscaling:asg",
+    "OptionName": "MaxSize",
+    "Value": "2"
+  },
+  {
+    "Namespace": "aws:elasticbeanstalk:environment",
+    "OptionName": "EnvironmentType",
+    "Value": "LoadBalanced"
+  },
+  {
+    "Namespace": "aws:elasticbeanstalk:environment",
+    "OptionName": "LoadBalancerType",
+    "Value": "application"
+  },
+  {
+    "Namespace": "aws:elasticbeanstalk:environment:process:default",
+    "OptionName": "MatcherHTTPCode",
+    "Value": "200-499"
+  },
+  {
+    "Namespace": "aws:elasticbeanstalk:environment:process:default",
+    "OptionName": "Port",
+    "Value": "5000"
+  },
+  {
+    "Namespace": "aws:elasticbeanstalk:environment:process:default",
+    "OptionName": "Protocol",
+    "Value": "HTTP"
+  }
+]

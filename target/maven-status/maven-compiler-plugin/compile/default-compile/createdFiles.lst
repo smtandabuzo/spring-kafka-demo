@@ -1,0 +1,8 @@
+com/example/kafkademo/producer/UserEventProducer.class
+com/example/kafkademo/controller/UserEventController.class
+com/example/kafkademo/avro/UserEvent.class
+com/example/kafkademo/consumer/UserEventConsumer.class
+com/example/kafkademo/avro/UserEvent$Builder.class
+com/example/kafkademo/util/MskClusterUtils.class
+com/example/kafkademo/KafkaDemoApplication.class
+com/example/kafkademo/config/KafkaConfig.class
