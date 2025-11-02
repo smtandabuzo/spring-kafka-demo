@@ -1,0 +1,10 @@
+{
+  "namespace": "com.example.kafkademo.avro",
+  "type": "record",
+  "name": "UserEvent",
+  "fields": [
+    { "name": "userId", "type": "string" },
+    { "name": "action", "type": "string" },
+    { "name": "timestamp", "type": "long" }
+  ]
+}

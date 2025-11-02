@@ -1,0 +1,106 @@
+<mat-card class="event-form-card">
+  <mat-card-header>
+      <mat-card-title>Track New Event</mat-card-title>
+  </mat-card-header>
+  <mat-divider></mat-divider>
+  <mat-card-content class="form-container">
+    <form [formGroup]="eventForm" (ngSubmit)="onSubmit()">
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>User ID</mat-label>
+          <input matInput formControlName="userId" placeholder="Enter user ID">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>Event Type</mat-label>
+          <mat-select formControlName="eventType">
+            <mat-option *ngFor="let type of eventTypes" [value]="type.value">
+              {{type.viewValue}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div *ngIf="eventForm.get('eventType')?.value === 'page_view'" class="form-row">
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>Page URL</mat-label>
+          <input matInput formControlName="pageUrl" placeholder="https://example.com/product/123">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>Page Title</mat-label>
+          <input matInput formControlName="pageTitle" placeholder="Product Page">
+        </mat-form-field>
+      </div>
+
+      <div *ngIf="eventForm.get('eventType')?.value === 'add_to_cart'" class="add-to-cart-section">
+        <h3 class="section-title">Product Details</h3>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Item ID</mat-label>
+            <input matInput formControlName="itemId" placeholder="item_123">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Category</mat-label>
+            <mat-select formControlName="category">
+              <mat-option *ngFor="let category of categories" [value]="category.id">
+                {{category.name}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Item Type</mat-label>
+            <mat-select formControlName="itemType">
+              <mat-option *ngFor="let type of itemTypes" [value]="type">
+                {{type | titlecase}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="form-field price-field">
+            <mat-label>Price</mat-label>
+            <input matInput type="number" formControlName="price" [placeholder]="getCurrencyPlaceholder()">
+            <span matSuffix>{{getCurrencySymbol()}}</span>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="form-field currency-field">
+            <mat-label>Currency</mat-label>
+            <mat-select formControlName="currency">
+              <mat-option *ngFor="let currency of currencies" [value]="currency.code">
+                {{currency.code}} ({{currency.symbol}})
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="form-field quantity-field">
+            <mat-label>Quantity</mat-label>
+            <input matInput type="number" formControlName="quantity" placeholder="1">
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div *ngIf="eventForm.get('eventType')?.value === 'purchase'" class="form-row">
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>Order ID</mat-label>
+            <input matInput formControlName="orderId" placeholder="order_123">
+        </mat-form-field>
+      </div>
+
+      <div class="form-actions">
+        <button mat-raised-button
+                color="primary"
+                type="submit"
+                [disabled]="!eventForm.valid"
+                class="submit-button">
+          <mat-icon></mat-icon>
+          Track Event
+        </button>
+      </div>
+    </form>
+  </mat-card-content>
+</mat-card>

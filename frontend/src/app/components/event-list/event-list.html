@@ -1,0 +1,63 @@
+<div class="event-list-container">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Event Log</mat-card-title>
+      <mat-card-subtitle>View and filter user events</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <div class="filter-controls">
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>User ID</mat-label>
+          <input matInput [(ngModel)]="userIdFilter" placeholder="Enter user ID" (keyup.enter)="loadEvents()">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>Event Type</mat-label>
+          <mat-select [(ngModel)]="eventTypeFilter">
+            <mat-option [value]="''">All Events</mat-option>
+            <mat-option *ngFor="let type of eventTypes" [value]="type">
+              {{ type | titlecase }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <div class="action-buttons">
+          <button mat-raised-button color="primary" (click)="loadEvents()" [disabled]="!userIdFilter || loading">
+          </button>
+          <button mat-button color="warn" (click)="clearFilters()" [disabled]="loading">
+          </button>
+          <button mat-button color="warn" (click)="clearEventLog()" [disabled]="loading">
+          </button>
+        </div>
+      </div>
+
+      <div *ngIf="!initialLoad">
+        <div *ngIf="loading" class="loading-spinner">
+          <mat-spinner diameter="40"></mat-spinner>
+          <span>Loading events...</span>
+        </div>
+
+        <div *ngIf="error" class="error-message">
+          <span>{{ error }}</span>
+        </div>
+      </div>
+
+      <mat-list *ngIf="!initialLoad && events.length > 0" class="event-list">
+        <mat-list-item *ngFor="let event of events; trackBy: trackByEventId" class="event-item">
+          <div mat-line class="event-header">
+            <span class="event-type">{{ event.eventType | titlecase }}</span>
+            <span class="event-time">{{ event.timestamp | date:'medium' }}</span>
+          </div>
+          <div mat-line class="event-details">
+            <pre>{{ event | json }}</pre>
+          </div>
+        </mat-list-item>
+      </mat-list>
+
+      <div *ngIf="!loading && !error && events.length === 0" class="no-events">
+        <p>No events found for the selected filters</p>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>
