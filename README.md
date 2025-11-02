@@ -1,52 +1,120 @@
-# Spring Kafka Demo Deployment to AWS EKS
+# Spring Kafka Demo
 
-This guide explains how to deploy the Spring Kafka Demo application to AWS EKS.
+A full-stack application demonstrating event streaming with Spring Boot, Kafka, and Angular.
+
+## Features
+
+- **Backend**: Spring Boot application with Kafka integration
+- **Frontend**: Angular application with Material UI
+- **Event Types**: Page views, add to cart, and purchase events
+- **Real-time Processing**: Kafka for event streaming
+- **Monitoring**: Kafka UI for cluster monitoring
 
 ## Prerequisites
 
-1. AWS CLI configured with appropriate credentials
-2. Docker installed and running
-3. kubectl installed
-4. jq for JSON processing
+- Docker and Docker Compose
+- Java 17+
+- Node.js 18+ and npm
+- Angular CLI (for development)
 
-## EKS Cluster Setup
+## Quick Start
 
-### 1. Create EKS Cluster
-
-```bash
-# Make the setup script executable
-chmod +x setup-eks-cluster.sh
-
-# Run the cluster setup
-./setup-eks-cluster.sh
-```
-
-This will:
-- Create an EKS cluster named `spring-kafka-eks` in `us-east-1`
-- Set up a node group with 3 `t3.medium` instances
-- Configure `kubectl` to use the new cluster
-
-### 2. Verify Cluster Access
-
-```bash
-kubectl get nodes
-```
-
-## Application Deployment
-
-1. **Update Configuration**
-   - Update `deploy-to-aws.sh` with your AWS account ID, region, and EKS cluster name
-   - Ensure your Kafka bootstrap servers and certificate paths are correct in `application.yml`
-
-2. **Build and Push Docker Image**
+1. **Clone the repository**
    ```bash
+   git clone https://github.com/yourusername/spring-kafka-demo.git
+   cd spring-kafka-demo
+   ```
+
+2. **Start the application**
+   ```bash
+   docker-compose up -d --build
+   ```
+
+3. **Access the applications**
+   - Frontend: http://localhost:4200
+   - Backend API: http://localhost:8080
+   - Kafka UI: http://localhost:8081
+
+## Project Structure
+
+```
+spring-kafka-demo/
+├── backend/               # Spring Boot application
+├── frontend/              # Angular application
+├── docker-compose.yml     # Docker Compose configuration
+└── README.md             # This file
+```
+
+## Development
+
+### Backend (Spring Boot)
+
+```bash
+cd backend
+./mvnw spring-boot:run
+```
+
+### Frontend (Angular)
+
+```bash
+cd frontend
+npm install
+ng serve
+```
+
+### Environment Variables
+
+Create `.env` file in the root directory:
+```
+SPRING_PROFILES_ACTIVE=dev
+KAFKA_BOOTSTRAP_SERVERS=localhost:9092
+```
+
+## Docker
+
+### Build and Run
+
+```bash
+# Build all services
+docker-compose build
+
+# Start all services
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+
+# Stop all services
+docker-compose down
+```
+
+## Monitoring
+
+Access Kafka UI at http://localhost:8081 to:
+- View topics and messages
+- Monitor consumer groups
+- Inspect schemas
+- Check cluster health
+
+## Deployment
+
+### AWS EKS
+
+1. **Prerequisites**
+   - AWS CLI configured
+   - kubectl installed
+   - jq for JSON processing
+
+2. **Deploy to EKS**
+   ```bash
+   chmod +x setup-eks-cluster.sh
+   ./setup-eks-cluster.sh
    ./deploy-to-aws.sh
    ```
 
-3. **Set Up Kafka Certificates**
-   ```bash
-   ./setup-kafka-secrets.sh
-   ```
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 4. **Deploy Kafka using Strimzi**
    ```bash

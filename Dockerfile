@@ -27,4 +27,8 @@ USER spring
 
 EXPOSE 8080
 
-ENTRYPOINT ["java", "-jar", "/app/app.jar"]
+# Set JVM options for better memory management
+ENV JAVA_OPTS="-Xms256m -Xmx512m -XX:MaxRAMPercentage=75.0 -Dspring.profiles.active=docker"
+
+# Use shell form to allow variable substitution
+ENTRYPOINT exec java $JAVA_OPTS -jar /app/app.jar
