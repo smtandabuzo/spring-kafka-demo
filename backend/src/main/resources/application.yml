@@ -1,6 +1,15 @@
 server:
   port: 8080
 
+# Logging configuration
+logging:
+  level:
+    org:
+      springframework:
+        data:
+          mongodb: DEBUG
+        kafka: DEBUG
+
 ---
 # Default configuration (local development)
 spring:
@@ -19,6 +28,33 @@ spring:
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
         spring.json.trusted.packages: "*"
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/user-events
+      auto-index-creation: true
+
+---
+# Docker configuration
+spring:
+  config:
+    activate:
+      on-profile: docker
+  kafka:
+    bootstrap-servers: kafka:29092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    consumer:
+      group-id: user-event-consumers
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
+  data:
+    mongodb:
+      uri: mongodb://mongodb:27017/user-events
+      auto-index-creation: true
 
 ---
 # Docker profile configuration
@@ -26,6 +62,10 @@ spring:
   config:
     activate:
       on-profile: docker
+  data:
+    mongodb:
+      uri: mongodb://mongodb:27017/user-events
+      auto-index-creation: true
   kafka:
     bootstrap-servers: kafka:29092
     producer:

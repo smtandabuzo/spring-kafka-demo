@@ -2,6 +2,7 @@ package com.example.kafkademo.controller;
 
 import com.example.kafkademo.enums.EventType;
 import com.example.kafkademo.events.interfaces.Event;
+import java.util.Arrays;
 import com.example.kafkademo.factory.EventFactory;
 import com.example.kafkademo.processor.EventProcessorManager;
 import com.example.kafkademo.product.ItemContext;
@@ -15,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 import org.springframework.http.HttpStatus;
@@ -41,7 +41,13 @@ public class EventController {
         
         if (userId != null && !userId.isEmpty()) {
             if (eventType != null && !eventType.isEmpty()) {
-                events = eventLogService.getEventsByUserIdAndType(userId, eventType);
+                try {
+                    EventType type = EventType.valueOf(eventType.toUpperCase());
+                    events = eventLogService.getEventsByUserIdAndType(userId, type);
+                } catch (IllegalArgumentException e) {
+                    return ResponseEntity.badRequest().body("Invalid event type. Valid types are: " + 
+                        Arrays.toString(EventType.values()));
+                }
             } else {
                 events = eventLogService.getEventsByUserId(userId);
             }
@@ -111,54 +117,7 @@ public class EventController {
                     break;
                     
                 case PURCHASE:
-                    eventData.put("orderId", request.get("orderId"));
-                    eventData.put("paymentMethod", request.get("paymentMethod"));
-                    eventData.put("currency", request.get("currency"));
-                    
-                    List<Map<String, Object>> items = new ArrayList<>();
-                    // For purchase, we expect items to be sent as an array in the request
-                    if (request.get("items") != null && request.get("items") instanceof List) {
-                        items = (List<Map<String, Object>>) request.get("items");
-                    } else if (request.get("itemId") != null) {
-                        // For backward compatibility, create an item from the form fields
-                        Map<String, Object> purchaseItem = new HashMap<>();
-                        purchaseItem.put("itemId", request.get("itemId"));
-
-                        // Set itemType with default if not provided
-                        purchaseItem.put("itemType", request.get("itemType") != null ? request.get("itemType") : "UNKNOWN");
-                        
-                        // Validate and set price with default 0.0 if not provided
-                        try {
-                            BigDecimal price = BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP);
-                            if (request.get("price") != null) {
-                                price = new BigDecimal(request.get("price").toString())
-                                        .setScale(2, RoundingMode.HALF_UP);
-                                if (price.compareTo(BigDecimal.ZERO) < 0) {
-                                    throw new IllegalArgumentException("Price cannot be negative");
-                                }
-                            }
-                            purchaseItem.put("price", price.doubleValue());
-                        } catch (NumberFormatException e) {
-                            throw new IllegalArgumentException("Invalid price format. Please provide a valid number.", e);
-                        }
-                        
-                        // Set quantity with default 1 if not provided
-                        int quantity = 1;
-                        if (request.get("quantity") != null) {
-                            try {
-                                quantity = Integer.parseInt(request.get("quantity").toString());
-                                if (quantity < 1) {
-                                    throw new IllegalArgumentException("Quantity must be at least 1");
-                                }
-                            } catch (NumberFormatException e) {
-                                throw new IllegalArgumentException("Invalid quantity format", e);
-                            }
-                        }
-                        purchaseItem.put("quantity", quantity);
-                        
-                        items.add(purchaseItem);
-                    }
-                    eventData.put("items", items);
+                    purchaseEvent(request, eventData);
                     break;
             }
 
@@ -202,6 +161,57 @@ public class EventController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(errorResponse);
         }
+    }
+
+    private static void purchaseEvent(Map<String, Object> request, Map<String, Object> eventData) {
+        eventData.put("orderId", request.get("orderId"));
+        eventData.put("paymentMethod", request.get("paymentMethod"));
+        eventData.put("currency", request.get("currency"));
+
+        List<Map<String, Object>> items = new ArrayList<>();
+        // For purchase, we expect items to be sent as an array in the request
+        if (request.get("items") != null && request.get("items") instanceof List) {
+            items = (List<Map<String, Object>>) request.get("items");
+        } else if (request.get("itemId") != null) {
+            // For backward compatibility, create an item from the form fields
+            Map<String, Object> purchaseItem = new HashMap<>();
+            purchaseItem.put("itemId", request.get("itemId"));
+
+            // Set itemType with default if not provided
+            purchaseItem.put("itemType", request.get("itemType") != null ? request.get("itemType") : "UNKNOWN");
+            
+            // Validate and set price with default 0.0 if not provided
+            try {
+                BigDecimal price = BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP);
+                if (request.get("price") != null) {
+                    price = new BigDecimal(request.get("price").toString())
+                            .setScale(2, RoundingMode.HALF_UP);
+                    if (price.compareTo(BigDecimal.ZERO) < 0) {
+                        throw new IllegalArgumentException("Price cannot be negative");
+                    }
+                }
+                purchaseItem.put("price", price.doubleValue());
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("Invalid price format. Please provide a valid number.", e);
+            }
+            
+            // Set quantity with default 1 if not provided
+            int quantity = 1;
+            if (request.get("quantity") != null) {
+                try {
+                    quantity = Integer.parseInt(request.get("quantity").toString());
+                    if (quantity < 1) {
+                        throw new IllegalArgumentException("Quantity must be at least 1");
+                    }
+                } catch (NumberFormatException e) {
+                    throw new IllegalArgumentException("Invalid quantity format", e);
+                }
+            }
+            purchaseItem.put("quantity", quantity);
+            
+            items.add(purchaseItem);
+        }
+        eventData.put("items", items);
     }
 
     private Event createEvent(String userId, String eventType, Map<String, Object> data) {

@@ -1,6 +1,5 @@
 version: '3.8'
 
-# Define networks at the top level
 networks:
   kafka-network:
     driver: bridge
@@ -9,6 +8,7 @@ volumes:
   kafka-data:
   zookeeper-data:
   zookeeper-log:
+  mongodb-data:
 
 services:
   # Zookeeper Service
@@ -65,19 +65,36 @@ services:
     networks:
       - kafka-network
 
+  # MongoDB Service
+  mongodb:
+    image: mongo:6.0
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: user-events
+    volumes:
+      - mongodb-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.runCommand({ ping: 1 }).ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - kafka-network
+
   # Kafka UI (Kafdrop)
   kafka-ui:
-    image: obsidiandynamics/kafdrop:latest
+    image: provectuslabs/kafka-ui:latest
     container_name: kafka-ui
     depends_on:
       - kafka
     ports:
-      - "9000:9000"
+      - "8081:8080"  # Changed from 8080 to 8081 to avoid conflict with backend
     environment:
-      KAFKA_BROKERCONNECT: kafka:29092
-      JVM_OPTS: "-Xms32M -Xmx64M"
-      KAFKA_PROPERTIES: |
-        ssl.endpoint.identification.algorithm=
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
+      KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
     networks:
       - kafka-network
 
@@ -85,19 +102,21 @@ services:
   backend:
     build:
       context: ./backend
-      dockerfile: Dockerfile
     container_name: spring-kafka-backend
     ports:
       - "8080:8080"
     environment:
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+      SPRING_DATA_MONGODB_URI: mongodb://mongodb:27017/user-events
       SPRING_KAFKA_PROPERTIES_SECURITY_PROTOCOL: PLAINTEXT
-      SPRING_KAFKA_CONSUMER_GROUP_ID: event-consumer-group
+      SPRING_KAFKA_CONSUMER_GROUP_ID: user-event-consumers
       SPRING_KAFKA_CONSUMER_AUTO_OFFSET_RESET: earliest
       SERVER_SERVLET_CONTEXT_PATH: /
       SPRING_PROFILES_ACTIVE: docker
     depends_on:
       kafka:
+        condition: service_healthy
+      mongodb:
         condition: service_healthy
     healthcheck:
       test: ["CMD", "wget", "--spider", "http://localhost:8080/actuator/health"]

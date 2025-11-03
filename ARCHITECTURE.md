@@ -113,6 +113,223 @@ graph TD
 ## Data Flow
 
 1. **Event Generation**
+   - Frontend generates user interaction events
+   - Events are sent to the backend via HTTP/HTTPS
+
+2. **Event Ingestion**
+   - Backend receives events via REST API
+   - Events are validated and enriched
+   - Events are published to Kafka topics
+
+3. **Event Processing**
+   - Kafka consumers process events asynchronously
+   - Events are transformed and enriched if needed
+   - Processed events are stored in MongoDB
+   - Real-time analytics are updated
+
+4. **Data Persistence**
+   - Processed events are stored in MongoDB collections
+   - Data is indexed for fast retrieval
+   - Archival policies for old data
+
+5. **Data Access**
+   - REST APIs expose processed data to frontend
+   - Real-time updates via WebSocket (if implemented)
+   - Aggregated data for dashboards
+
+## Components
+
+### 1. Frontend (Angular)
+- Built with Angular
+- Material UI components
+- Real-time updates via WebSocket/SSE
+- Responsive design for all devices
+
+### 2. Backend (Spring Boot)
+- **API Layer**: REST controllers for HTTP requests
+- **Service Layer**: Business logic and validation
+- **Repository Layer**: MongoDB data access
+- **Kafka Integration**:
+  - Producers for publishing events
+  - Consumers for processing events
+  - Error handling and retries
+  - Dead-letter queue for failed messages
+- **MongoDB Integration**:
+  - Document storage for events
+  - Indexing for performance
+  - Aggregation framework for analytics
+
+### 3. Apache Kafka
+- **Topics**:
+  - `user-events`: Raw user interaction events
+  - `processed-events`: Successfully processed events
+  - `dead-letter-queue`: Failed events for investigation
+- **Consumer Groups**:
+  - `user-event-consumers`: Main event processing
+  - `analytics-consumers`: Real-time analytics
+
+### 4. MongoDB
+- **Database**: `user-events`
+- **Collections**:
+  - `events`: Raw event data
+  - `processed_events`: Processed and enriched events
+  - `user_profiles`: User information
+  - `analytics`: Aggregated metrics
+
+### 5. Infrastructure
+- **Docker**: Containerization
+- **Docker Compose**: Local development
+- **Monitoring**:
+  - Spring Boot Actuator
+  - Prometheus metrics
+  - Grafana dashboards
+
+## Deployment Architecture
+
+### Local Development
+```mermaid
+graph TD
+    A[Angular Frontend] -->|HTTP| B[Spring Boot]
+    B -->|Produce| C[Kafka]
+    B -->|Consume| C
+    C -->|Process| D[MongoDB]
+    E[ZooKeeper] -->|Coordinate| C
+```
+
+### Production (AWS)
+```mermaid
+graph TD
+    A[CloudFront] -->|HTTPS| B[ALB]
+    B --> C[EC2/ECS/EKS]
+    C -->|Produce/Consume| D[MSK]
+    D -->|Process| E[DocumentDB]
+    F[CloudWatch] -->|Monitor| C
+    F -->|Monitor| D
+    F -->|Monitor| E
+    G[VPC] -->|Secure| C
+    G -->|Secure| D
+    G -->|Secure| E
+```
+
+## Security Considerations
+
+1. **Data Encryption**
+   - TLS for all inter-service communication
+   - Encrypted volumes for data at rest
+   - Secrets management (AWS Secrets Manager/Parameter Store)
+
+2. **Authentication & Authorization**
+   - JWT for API authentication
+   - Role-based access control (RBAC)
+   - OAuth2/OIDC integration
+
+3. **Network Security**
+   - VPC with private subnets
+   - Security groups and network ACLs
+   - Web Application Firewall (WAF)
+
+4. **Compliance**
+   - GDPR/CCPA compliance
+   - Audit logging
+   - Data retention policies
+
+## Scaling
+
+### Horizontal Scaling
+- **Application Layer**:
+  - Multiple instances behind load balancer
+  - Auto-scaling based on CPU/memory metrics
+  - Stateless design for easy scaling
+
+- **Kafka**:
+  - Multiple partitions per topic
+  - Consumer group rebalancing
+  - Broker replication
+
+- **MongoDB**:
+  - Replica sets for high availability
+  - Sharding for horizontal scaling
+  - Read preferences for read scaling
+
+### Performance Optimization
+- **Caching**:
+  - Redis/Memcached for frequently accessed data
+  - Spring Cache abstraction
+  - Cache invalidation strategies
+
+- **Database Optimization**:
+  - Proper indexing
+  - Query optimization
+  - Connection pooling
+
+- **Kafka Optimization**:
+  - Batch processing
+  - Compression
+  - Tuning producer/consumer configurations
+
+## Monitoring and Alerting
+
+### Metrics Collection
+- **Application Metrics**:
+  - JVM metrics
+  - HTTP request metrics
+  - Custom business metrics
+
+- **Kafka Metrics**:
+  - Consumer lag
+  - Broker metrics
+  - Topic metrics
+
+- **MongoDB Metrics**:
+  - Query performance
+  - Connection statistics
+  - Replication lag
+
+### Logging
+- Centralized logging (ELK stack)
+- Structured logging with correlation IDs
+- Log rotation and retention policies
+
+### Alerting
+- Threshold-based alerts
+- Anomaly detection
+- On-call rotations
+
+## Disaster Recovery
+
+### Backup Strategy
+- **MongoDB**:
+  - Regular backups to S3
+  - Point-in-time recovery
+  - Cross-region replication
+
+- **Kafka**:
+  - Topic replication
+  - Log compaction
+  - Message retention policies
+
+### Failover Procedures
+- Automated failover for MongoDB replica sets
+- Kafka broker failover
+- Multi-AZ deployment
+
+## Future Enhancements
+
+### Short-term
+- [ ] Implement WebSocket for real-time updates
+- [ ] Add more event types and processing logic
+- [ ] Enhance monitoring and alerting
+
+### Long-term
+- [ ] Machine learning for event analysis
+- [ ] Multi-region deployment
+- [ ] Advanced analytics dashboard
+
+## Conclusion
+
+This architecture provides a robust foundation for building scalable, reliable, and maintainable event-driven applications. The use of Kafka for event streaming and MongoDB for flexible data storage allows for efficient processing of high-volume event data while maintaining data consistency and availability.
+
+1. **Event Generation**
    - User interacts with frontend
    - Frontend sends event to backend API
    - Backend validates and publishes event to Kafka
